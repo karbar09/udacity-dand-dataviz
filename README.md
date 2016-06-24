@@ -8,7 +8,7 @@ The core of this visualization is a Choropleth of the United States of America. 
 
 Chart Type: Choropleth 
 Visual Encoding: Encode origination amount in a given state as the intensity of a hue. 
-Layout: Choropleth + Slider + Notes
+Layout: Choropleth (top) + Slider (below)
 
 # Feedback
 
@@ -21,5 +21,6 @@ Layout: Choropleth + Slider + Notes
 - Using d3 Queue to load multiple data sources: https://github.com/d3/d3-queue
 - d3-slider (examples): http://thematicmapping.org/playground/d3/d3.slider/
 - d3-slider (repo): http://github.com/turban/d3.slider
-
+- animations and transitions: http://www.jeromecukier.net/blog/2012/07/16/animations-and-transitions/
+- d3-tool tip: http://bl.ocks.org/Caged/6476579
 
