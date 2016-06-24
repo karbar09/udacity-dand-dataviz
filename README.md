@@ -6,6 +6,10 @@ I take a geographic approach to visualizing loan origination volumne (in dollars
 # Design
 The core of this visualization is a Choropleth of the United States of America. The smallest unit or entity is each State and the measured variable is the total loan origination amount in the state over a given period of time. Time is controlled by the user via the use of a slider (ranging from 2006 - 2014). 
 
+Chart Type: Choropleth 
+Visual Encoding: Encode origination amount in a given state as the intensity of a hue. 
+Layout: Choropleth + Slider + Notes
+
 # Feedback
 
 # Resources
@@ -15,6 +19,7 @@ The core of this visualization is a Choropleth of the United States of America. 
 - Grouping/Summarizing Data in D3: http://www.d3noob.org/2014/02/grouping-and-summing-data-using-d3nest.html
 - Creating a Hashtable/Dictionary from csv data: http://stackoverflow.com/questions/16588825/create-hashtable-dictionary-from-csv-data
 - Using d3 Queue to load multiple data sources: https://github.com/d3/d3-queue
-
+- d3-slider (examples): http://thematicmapping.org/playground/d3/d3.slider/
+- d3-slider (repo): http://github.com/turban/d3.slider
 
 

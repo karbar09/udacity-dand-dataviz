@@ -2,140 +2,136 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="stylesheet" href="css/d3.slider.css" />
+<link rel="stylesheet" href="css/main.css" />
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="https://d3js.org/d3-queue.v3.min.js"></script>
-
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="js/d3.slider.js"></script>
+<script src="js/helper.js"></script>
 </head>
 <body>
+	<div class="wrapper">
+	<h1>Prosper Loan Originations By State Between 2008 - Early 2014</h1>	
+	<div id="map"></div>
+	<h2>Selected Year: <span id="slider3text">2006</span></h2>	
+	<div id="slider"></div>
+	</div>
 <script type="text/javascript">
 		
-//Width and height of map
-var width = 960;
-var height = 500;
-
-// D3 Projection
+var margin = 0,
+	width = 900 - margin;
+	height = 540 - margin;
+	
 var projection = d3.geo.albersUsa()
-				   .translate([width/2, height/2])    // translate to center of screen
-				   .scale([1000]);          // scale things down so see entire US
-        
-// Define path generator
-var path = d3.geo.path()               // path generator that will convert GeoJSON to SVG paths
-		  	 .projection(projection);  // tell path generator to use albersUsa projection
+				   .translate([width/2, height/2])    
+				   .scale([1000]);          
+
+var path = d3.geo.path()               
+		  	 .projection(projection);  
 		
-
-//Create SVG element and append map to the SVG
-var svg = d3.select("body")
+var svg = d3.select("#map")
 			.append("svg")
-			.attr("width", width)
-			.attr("height", height);
-        
-// Append Div for tooltip to SVG
-var div = d3.select("body")
-		    .append("div")   
-    		.attr("class", "tooltip")               
-    		.style("opacity", 0);
+			.attr("width", width + margin)
+			.attr("height", height + margin);
 
+var maxOriginated = 100000000;
+var minOriginated = 1;
+var color = d3.scale.linear()
+		.domain([minOriginated,maxOriginated])
+		.range(["lightblue","blue"]);
+
+/*
+Setup Tool Tip to show originations for each state on hover. 
+Format number to be expressed as a dollar amount.			
+*/
+var number_format = d3.format("$,0")
+var tip = d3.tip()
+		    .attr('class', 'd3-tip')
+		    .offset([-10, 0])
+		    .html(function(d) {
+				return "<strong>" + d.properties.name + ":</strong> <span style='color:red'> " + number_format(d.properties.originated) + "</span>";
+		    })
+
+svg.call(tip);
+
+//Load Datasets
 d3.queue()
 	.defer(d3.csv, "data/prosperLoanData.csv")
 	.defer(d3.csv, "data/states.csv")
 	.defer(d3.json, "data/us-states.json")
-	.await(visualize);
+	.await(draw);
 
-function visualize(error, prosper_data, abbrev_data,usa_data) {
-	if (error) { 
-		console.log(error); 
-	}
+//Initial data will show for 2006
+var init_year = 2006;
+function draw(error, prosper_data, abbrev_data,usa_data) {
 
-	var state_loan_data = d3.nest()
-		.key(function(d) { 
-			return d.BorrowerState;
-		})
-		.rollup(function(d) { 
-			return d3.sum(d, function(g) {return g.LoanOriginalAmount; });
-		})
-		.entries(prosper_data);
-		
-	var state_abbrev_data = {};
-	for (var i = 0; i < abbrev_data.length; i++) {
-	    state_abbrev_data[abbrev_data[i].Abbreviation] = abbrev_data[i].State;
-	}
-	
-	var maxOriginated = -1;
-	
-	for (var i = 0; i < state_loan_data.length; i++) {
-		var state_name = state_abbrev_data[state_loan_data[i].key];
-		for (var j = 0; j < usa_data.features.length; j++)  {
-			var usa_state_name = usa_data.features[j].properties.name;
-
-			if (state_name == usa_state_name) {
-
-				usa_data.features[j].properties.originated = state_loan_data[i].values;
-				 
-				if (state_loan_data[i].values > maxOriginated) {
-					maxOriginated = state_loan_data[i].values;
-				}
-				
-				break;
-			}
-		}
-	}
-	// Define linear scale for output
-	var color = d3.scale.linear()
-			.domain([0,maxOriginated])
-			.range(["lightblue","blue"]);
-
-	
-	console.log(state_abbrev_data);
-
-	console.log(state_loan_data);
-	
-	console.log(usa_data.features);
-	console.log(maxOriginated);
+	//See js/helper.js for the filtered_data function
+	var usa_data = filtered_data(prosper_data, abbrev_data,usa_data,init_year);
 	
 	svg.selectAll("path")
 		.data(usa_data.features)
 		.enter()
 		.append("path")
 		.attr("d", path)
-		.style("stroke", "#fff")
-		.style("stroke-width", "1")
+		.style("stroke", "black")
+		.style("stroke-width", "0.5")
 		.style("fill", function(d) {
 
-			// Get data value
 			var value = d.properties.originated;
 
 			if (value) {
-				//If value exists…
 				return color(value);
 			} else {
-				//If value is undefined…
+				//if the state does not have a value, we return different color.
 				return "rgb(213,222,217)";
 			}
-		});
+		})
+		.on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 		
+	//LEGEND		
 	var legend = d3.select("body").append("svg")
 	      			.attr("class", "legend")
 	     			.attr("width", 140)
 	    			.attr("height", 200)
 	   				.selectAll("g")
-	   				.data(color.domain().slice().reverse())
+	   				.data(["blue","lightblue","rgb(213,222,217)"])
 	   				.enter()
 	   				.append("g")
 	     			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-	  	legend.append("rect")
+	legend.append("rect")
 	   		  .attr("width", 18)
 	   		  .attr("height", 18)
-	   		  .style("fill", color);
+	   		  .style("fill", function(d) {return d;});
 
-	  	legend.append("text")
-	  		  .data(["High","Low"])
+	legend.append("text")
+	  		  .data(["$100,000,000","$1","0$ (Due to Lending Restrictions)"])
 	      	  .attr("x", 24)
 	      	  .attr("y", 9)
 	      	  .attr("dy", ".35em")
 	      	  .text(function(d) { return d; });
-		
-	
+	 
+	//SLIDER
+	//To move between years
+	var min = 2006;
+	var max = 2014;
+	var ticks = max - min;
+	d3.select('#slider').call(
+		d3.slider()
+			.axis(true)
+			.min(min)
+			.max(max)
+			.step(1)
+			.value(init_year)	
+			.on("slide", function(evt,value) {
+			  	d3.select('#slider3text').text(value);
+				var usa_data_new = filtered_data(prosper_data, abbrev_data,usa_data,value);
+				//see helper.js for the update function
+				update(usa_data_new);				
+			})
+	);
 };
 
 </script>
