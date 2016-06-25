@@ -3,7 +3,7 @@ Function that accepts datasets/selected year, and returns
 a GeoJSON USA data along with the loan origination amount for each state, given a year
 */
 function filtered_data(prosper_sum_data, abbrev_data,usa_data,i_year) {
-	//group prosper loan data by borrowerstate, and filter by the origination year
+	//filter the prosper summary data by year
 	var state_loan_data = [];
 	for(var i=0;i<prosper_sum_data.length;i++) {
 		var state = prosper_sum_data[i];
