@@ -1,18 +1,19 @@
-.wrapper div {
-		margin: 5px 0;
-	}
+#main-wrapper {
+    100%;
+}
+#fixed-width {
+    width:100px;
+    float:left;
+}
+#rest-of-space {
+    padding-top:100px;
+}
 
 .wrapper {
   width: 900px;
-  margin-left: auto;
-  margin-right: auto;
+  float:left;
 }
 	
-.wrapper_2 {
-  width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-}
 /* On mouse hover, lighten state color */
 path:hover {
 	fill-opacity: .7;
@@ -62,12 +63,12 @@ div.tooltip {
 }
 /* Legend Font Style */
 body {
-	font: 11px sans-serif;
+	font: 14px sans-serif;
 }
         
 /* Legend Position Style */
 .legend {
 	position:absolute;
-	left:1000px;
-	top:350px;
+	left:800px;
+	top:450px;
 }
