@@ -57,17 +57,17 @@ svg.call(tip);
 
 //Load Datasets
 d3.queue()
-	.defer(d3.csv, "data/prosperLoanData.csv")
+	.defer(d3.json, "data/prosperLoanDataSum.json")
 	.defer(d3.csv, "data/states.csv")
 	.defer(d3.json, "data/us-states.json")
 	.await(draw);
 
 //Initial data will show for 2006
 var init_year = 2006;
-function draw(error, prosper_data, abbrev_data,usa_data) {
-
+function draw(error, prosper_sum_data, abbrev_data, usa_data) {
+	
 	//See js/helper.js for the filtered_data function
-	var usa_data = filtered_data(prosper_data, abbrev_data,usa_data,init_year);
+	var usa_data = filtered_data(prosper_sum_data, abbrev_data,usa_data,init_year);
 	
 	svg.selectAll("path")
 		.data(usa_data.features)
@@ -127,7 +127,7 @@ function draw(error, prosper_data, abbrev_data,usa_data) {
 			.value(init_year)	
 			.on("slide", function(evt,value) {
 			  	d3.select('#slider3text').text(value);
-				var usa_data_new = filtered_data(prosper_data, abbrev_data,usa_data,value);
+				var usa_data_new = filtered_data(prosper_sum_data, abbrev_data,usa_data,value);
 				//see helper.js for the update function
 				update(usa_data_new);				
 			})

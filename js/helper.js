@@ -2,23 +2,25 @@
 Function that accepts datasets/selected year, and returns 
 a GeoJSON USA data along with the loan origination amount for each state, given a year
 */
-function filtered_data(prosper_data, abbrev_data,usa_data,i_year) {
+function filtered_data(prosper_sum_data, abbrev_data,usa_data,i_year) {
 	//group prosper loan data by borrowerstate, and filter by the origination year
-	var state_loan_data = d3.nest()
-		.key(function(d) { 
-			return d.BorrowerState;
-		})
-		.rollup(function(d) { 
-			return d3.sum(d, function(g) {
-				var year = g.LoanOriginationQuarter.split(" ")[1]
-				if (year == i_year) {
-					return g.LoanOriginalAmount; 
-				} else {
-					return 0;
-				}
-			});
-		})
-		.entries(prosper_data);
+	var state_loan_data = [];
+	for(var i=0;i<prosper_sum_data.length;i++) {
+		var state = prosper_sum_data[i];
+		var state_dict = {
+			'key':state.key,
+			'values':0
+		};
+		for(var j =0;j<state.values.length;j++) {
+			var year = state.values[j]
+			if(year.key==i_year) {
+				state_dict['key'] = state.key;
+				state_dict['values'] = year.values				
+				break;
+			}
+		}
+		state_loan_data.push(state_dict)
+	}	
 	
 	//prosper data contains the state abbreviations. we need the full name to use the GeoJSON data.
 	//create a dict that maps the abbreviations to the full name
@@ -40,7 +42,6 @@ function filtered_data(prosper_data, abbrev_data,usa_data,i_year) {
 	}
 	return(usa_data)
 };
-
 
 //Updates visualization with new data
 function update(usa_data_new) {
