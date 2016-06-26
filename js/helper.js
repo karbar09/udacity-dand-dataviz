@@ -43,6 +43,21 @@ function filtered_data(prosper_sum_data, abbrev_data,usa_data,i_year) {
 	return(usa_data)
 };
 
+//Function to get color string from loan origination amount
+function get_color(d){
+	
+	var value = d.properties.originated;
+
+	if (value) {
+		return color(value);
+	} else {
+		//if the state does not have a value, we return different color.
+		//return "ffffe0";
+		return "fff7fb"
+	}
+			
+}
+
 //Updates visualization with new data
 function update(usa_data_new) {
 		
@@ -56,14 +71,7 @@ function update(usa_data_new) {
 		.attr("d", path);
 		
 	//ENTER + UPDATE
-	paths.style("fill",function(d) { 
-		var value = d.properties.originated;
-		if (value) {
-			return color(value);
-		} else {
-			return "rgb(213,222,217)";
-		}
-	});
+	paths.style("fill",get_color);
 	
 	//EXIT OLD Data
 	paths.exit().remove();

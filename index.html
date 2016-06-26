@@ -2,45 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" href="css/d3.slider.css" />
+<link rel="stylesheet" href="http://rawgit.com/MasterMaps/d3-slider/master/d3.slider.css" />
 <link rel="stylesheet" href="css/main.css" />
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="https://d3js.org/d3-queue.v3.min.js"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-<script src="js/d3.slider.js"></script>
+<script src="http://rawgit.com/MasterMaps/d3-slider/master/d3.slider.js"></script>
 <script src="js/helper.js"></script>
 </head>
 <body>
-	<h1>Prosper Loan Originations By State Between 2008 - Early 2014</h1>	
-
-	<div id="main-wrapper">
-		<div class="wrapper">
-			<div id="map"></div>
-		</div>
-		<div>
-			<div id="rest-of-space"> 
-				<p>
-				Excluding 2014 (do not have a full year’s worth of data), prosper loans originations seem to increase across the US states over time. We see that as of 2013, there are no loans in North Dakota, Iowa and Maine. In the past, take 2008 for instance, there were loan originations in these states. In fact, according to this source (http://www.lendingmemo.com/lending-club-and-prosper-states/), 3 states are not open to p2p lending: North Dakota, Iowa and Maine. So, legislation has actually closed these states off from certain lending marketplaces. Aside from this, we can see that California, Texas, New York and Florida are the hotbeds of loan originations. It’s no coincidence that these states also have the highest electoral counts. This is probably more so a testament to the large populations of these states, rather than the level of “p2p lending interest” in these regions (compared to others).
-				</p>
-				<p>Selected Year: 
-					<span id="slider3text">2006</span>
-				</p>
-				<div>
-					
-					<div id="slider"></div>
-				</div>
-			</div>
-		</div>
+	<h1>Prosper Loan Originations By State Between 2006 - Early 2014</h1>	
+	<div id="wrapper">
+		<div id="map"></div>
+		<p>Selected Year: <span id="slider3text">2006</span></p>
+		<div id="slider"></div>
+		<br>
+		<p>Prosper loans originations seem to increase across the US states over time, except for a dip during 2009 (due to the temporary halting of the loan business). As of 2013, there are no loans in North Dakota, Iowa and Maine. In previous years (e.g. 2008), there were loan originations in these states. In fact, according to this source (http://www.lendingmemo.com/lending-club-and-prosper-states/), 3 states are not open to p2p lending: North Dakota, Iowa and Maine. So, legislation has actually closed these states off from certain lending marketplaces. Aside from this, we can see that California, Texas, New York and Florida are the hotbeds of loan originations. It’s no coincidence that these states also have the highest electoral counts. This is probably more so a testament to the large populations of these states, rather than the level of “p2p lending interest” in these regions (compared to others).
+		</p>
 	</div>
 <script type="text/javascript">
 		
 var margin = 0,
-	width = 650 - margin;
-	height = 450 - margin;
+	width = 980 - margin;
+	height = 540 - margin;
 	
 var projection = d3.geo.albersUsa()
 				   .translate([width/2, height/2])    
-				   .scale([700]);          
+				   .scale([1000]);          
 
 var path = d3.geo.path()               
 		  	 .projection(projection);  
@@ -50,11 +38,21 @@ var svg = d3.select("#map")
 			.attr("width", width + margin)
 			.attr("height", height + margin);
 
-var maxOriginated = 100000000;
-var minOriginated = 1;
-var color = d3.scale.linear()
-		.domain([minOriginated,maxOriginated])
-		.range(["lightblue","blue"]);
+//Set color scheme based on loan origination values. Create 8 buckets based on values.
+var color_domain = [0,1,1000,10000,100000,1000000,10000000,20000000,50000000];
+//var color_range = ['#ffffe0','#ffdaa3','#ffb27c','#fb8768','#eb5f5b','#d3394a','#b3152f','#8b0000'];
+var color_range = ["#fff7fb",
+	"#ece7f2",
+	"#d0d1e6",
+	"#a6bddb",
+	"#74a9cf",
+	"#3690c0",
+	"#0570b0",
+	"#034e7b"];
+var color_range_strings = ["$0 - Due to Lending Restrictions","$1 - $1,000","$1,000 - $10,000","$10,000 - $100,000","$100,000 - $1,000,000","$1 Million - $10 Million","$10 Million - $20 Millon","$20-50 Million"]
+var color = d3.scale.log()
+		.domain(color_domain)
+		.range(color_range);
 
 /*
 Setup Tool Tip to show originations for each state on hover. 
@@ -91,28 +89,19 @@ function draw(error, prosper_sum_data, abbrev_data, usa_data) {
 		.attr("d", path)
 		.style("stroke", "black")
 		.style("stroke-width", "0.5")
-		.style("fill", function(d) {
-
-			var value = d.properties.originated;
-
-			if (value) {
-				return color(value);
-			} else {
-				//if the state does not have a value, we return different color.
-				return "rgb(213,222,217)";
-			}
-		})
+		.style("fill", get_color)
 		.on('mouseover', tip.show)
         .on('mouseout', tip.hide);
 		
 	//LEGEND		
 	var legend = d3.select("body").append("svg")
 	      			.attr("class", "legend")
-	     			.attr("width", 200)
-	    			.attr("height", 100)
+	     			.attr("width", 300)
+	    			.attr("height", 300)
 	   				.selectAll("g")
-	   				.data(["blue","lightblue","rgb(213,222,217)"])
-	   				.enter()
+	   				//.data(["blue","lightblue","rgb(213,222,217)"])
+	   				.data(color_range.reverse())
+					.enter()
 	   				.append("g")
 	     			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
@@ -122,8 +111,9 @@ function draw(error, prosper_sum_data, abbrev_data, usa_data) {
 	   		  .style("fill", function(d) {return d;});
 
 	legend.append("text")
-	  		  .data(["$100,000,000","$1","0$ (Due to Lending Restrictions)"])
-	      	  .attr("x", 24)
+	  		  //.data(["$100,000,000","$1","0$ (Due to Lending Restrictions)"])
+	      	  .data(color_range_strings.reverse())
+			  .attr("x", 24)
 	      	  .attr("y", 9)
 	      	  .attr("dy", ".35em")
 	      	  .text(function(d) { return d; })
