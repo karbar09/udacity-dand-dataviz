@@ -12,9 +12,9 @@ Initial design decisions such as chart type, visual encodings, layout, legends, 
 
 Chart Type: Choropleth of USA
 
-Visual Encodings: Loan Origination Amounts are bucketed into 8 groups. I use 8 hues of the color blue to distinguish between loan origination buckets - uses multiple hues of 1 color makes it less visually challenging to distinguish groups.
+Visual Encodings: Loan Origination Amounts are bucketed into 6 groups. I use 6 hues of the color blue to distinguish between loan origination buckets - uses multiple hues of 1 color makes it less visually challenging to distinguish groups.
 
-Legend: 8 colors. Each color represents a range of log-scaled dollar amounts and is clearly labeled in the legend.
+Legend: 6 colors. Each color represents a range of log-scaled dollar amounts and is clearly labeled in the legend.
 
 Layout:
 
@@ -43,6 +43,18 @@ Layout:
 2. and 3. The legend is confusing - based on this, i bucket the loan originations into 8 groups and show a gradated color scale. Also, i use a log scale instead of a linear scale. These changes make it more clear for the user to estimate the loan origination sizes for each state, see differences of an order of 10 between states, and see which states become the best/worst places for originations.
 4. Fixed a type in the title - thanks for catching it!
 
+### After Feedback 2/3/4
+1. Fixed the slider ticks so that .5 year ticks are not displayed (this appeared when viewing the visualization on larger screens)
+2. Fixed the slider number formatting so that years appeared without commas. [this issue was connected to fixing the number of ticks above]
+3. Reduced the number of buckets from 8 -> 6, by combining the ranges 1-1000, 1000-10000, and 10,000-100,000. This merging makes sense from the perspective of conveying information because the focus of this visualization is to show which states originate the most/least loans. Being able to see differences across america is also an objective, so, that's why I still show 6 gradations of loan amounts. 
+3. There was confusion, rightfully so, about what statistic is being displayed. So, I clarified the title to show the year that is currently being displayed in the chart. 
+
+Reviewer #3 mentioned that a bar chart may be better for this visualization. I responsed to this feedback with this message, and the reviewer agreed with my point of view:
+
+I think bar chart would be tricky because there are 50 states to have on the x-axis. From a viewer's perspective, it will be tough to search for a particular states data. the usa layout is more friendly to that kind of exploration. 
+
+Most of Reviewer #4's initial feedback was due to not scrolling down and seeing the slider. After seeing this, the reviewer revised the feedback to account for this.
+
 
 ## Feedback
 
@@ -53,6 +65,36 @@ It's very clear that the map is showing the changes in loans in different states
 2. the type of the legend is a little confusing, it's not heat map, should use spectrum for heatmap.
 3. there is no color difference between NC (>300k) and Kentucky (2k)
 4. title says it's from 2008, the chart starts from 2006
+
+### Reviewer #2
+
+From looking at the visualization, I'm not following what information you are trying to highlight. What does the value amount represent when the mouse is over state? The legend doesn't have a title so I'm unsure. The 0.5 marks in between the years are not operational, so it's probably best to remove them to avoid confusion. I think once I can convey the central theme of the visualization, then I can better respond to the questions. Looks like a good start though!
+
+I would probably also recommend using different colors instead of saturation for the visual encoding as it will stand out more. Just a suggestion.
+
+### Reviewer #3
+
+i dont see alaska there.
+i am surprised that there are two or three states without any loan originations.
+loan originations are thin in middle states. seem to reflect the political landscape of red/blue states.
+red states having less loan originations and blue states having in general more loan originations than the red ones. texas is an exception.
+loan originations are more in industrialized, prosperous, populous, and perhaps more well educated states.
+
+what do you mean by the legend 1-10 million loans. it is a bit confusing. a bar chart giving the numbers would have been more instructive..
+i interpreted that legend as the number of loans in the range 1 to 10m. 
+
+### Reviewer #4
+
+Here are my quick thoughts: 
+
+1. I think there are too many buckets. There are 8 here, which is hard to distinguish on the chart because the blue start blending together. 
+2. There is no state in the top 2 buckets. So why are they included in the legend? Just removing those would get down to 6 buckets, which would help. 
+3. Might be useful to have loan originations per capita.  Because this graph seems somewhat correlated with population (the biggest ones are Californis, Texas, Georgia, New York, Florida, Illinois). Georgie is the 8th most populous state and the other 5 are the top 5. 
+4. For title I would suggest: "Total Prosper Loan Originations 2006-2014, by state" 
+
+oops. didnt even scroll down so i did not see the toggle or the text below the toggle, which made the same point I made about population. this also changes my title suggestion since I thought you were shoring total originations over the entire 8-year period. 
+
+maybe this is an accidental point about people's expectation of scrolling when you show them a chart? maybe im an outlier but will everyone know to scroll?
 
 
 ## Resources
